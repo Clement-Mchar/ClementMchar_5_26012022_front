@@ -5,8 +5,9 @@ fetch("http://localhost:3000/api/products")
 		if (products.ok) {
 			return products.json();
 		}
+		throw new error(products.statusText);
 	})
-	.then(function (products) {
+	.then((products) => {
 		let card = "";
 		for (let product of products) {
 			card += `<a href="./html/product.html?id=${product._id}">
@@ -19,7 +20,6 @@ fetch("http://localhost:3000/api/products")
 		}
 		item.insertAdjacentHTML("afterbegin", card);
 	})
-
-	.catch(function (err) {
-		// Une erreur est survenue
+	.catch((err) => {
+		console.error(err);
 	});
