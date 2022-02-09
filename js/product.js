@@ -6,6 +6,8 @@ let productId = url.searchParams.get("id");
 const article = document.querySelector("article");
 const option = document.getElementById("colors");
 const select = document.querySelector("select");
+const cartBtn = document.getElementById("addToCart");
+const quantity = document.getElementById("quantity");
 
 fetch("http://localhost:3000/api/products/" + productId)
 	.then((product) => {
@@ -33,15 +35,10 @@ fetch("http://localhost:3000/api/products/" + productId)
               <p id="description">${product.description}</p>
             </div>`
 		);
-		colors.insertAdjacentHTML(
-			"afterbegin",
-			`<option>--SVP, choisissez une couleur --</option>`
-		);
-
 		for (let color of product.colors) {
 			select.insertAdjacentHTML(
 				"beforeend",
-				`<option value=${color}>${color}</option>`
+				`<option value="${color}">${color}</option>`
 			);
 		}
 	})
@@ -49,22 +46,38 @@ fetch("http://localhost:3000/api/products/" + productId)
 		console.error(err);
 	});
 
-let cartBtn = document.getElementById("addToCart");
-cartBtn.addEventListener("click", function (submit) {
+cartBtn.addEventListener("click", (submit) => {
+	if (
+		parseInt(quantity.value) <= 0 ||
+		parseInt(quantity.value) > 100 ||
+		!select.value
+	) {
+		return;
+	};
 	let addProduct = {
-		id: url.searchParams.get("id"),
-		quantity: document.getElementById("quantity").value,
+		id: productId,
+		quantity: parseInt(quantity.value),
 		color: select.value,
 	};
-	let savedProduct = JSON.parse(localStorage.getItem("product"));
+	
+	let savedProduct = JSON.parse(localStorage.getItem("cart"));
 	if (savedProduct) {
-		savedProduct.push(addProduct);
-		localStorage.setItem("product", JSON.stringify(savedProduct));
-		console.log(savedProduct);
+		const res = savedProduct.findIndex((elem) => {
+			return productId === elem.id && select.value === elem.color;
+		});
+		if (res >= 0) {
+			savedProduct[res].quantity += parseInt(quantity.value);
+		} else {
+			savedProduct.push(addProduct);
+		}
+		if (res >= 0 && savedProduct[res].quantity + parseInt(quantity.value) > 100){
+			return;
+		}
+		localStorage.setItem("cart", JSON.stringify(savedProduct));
 	} else {
 		savedProduct = [];
 		savedProduct.push(addProduct);
-		localStorage.setItem("product", JSON.stringify(savedProduct));
-		console.log(savedProduct);
+		localStorage.setItem("cart", JSON.stringify(savedProduct));
 	}
+
 });
