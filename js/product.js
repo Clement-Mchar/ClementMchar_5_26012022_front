@@ -60,24 +60,24 @@ cartBtn.addEventListener("click", (submit) => {
 		color: select.value,
 	};
 	
-	let savedProduct = JSON.parse(localStorage.getItem("cart"));
-	if (savedProduct) {
-		const res = savedProduct.findIndex((elem) => {
+	let savedProducts = JSON.parse(localStorage.getItem("cart"));
+	if (savedProducts) {
+		const res = savedProducts.findIndex((elem) => {
 			return productId === elem.id && select.value === elem.color;
 		});
 		if (res >= 0) {
-			savedProduct[res].quantity += parseInt(quantity.value);
+			savedProducts[res].quantity += parseInt(quantity.value);
 		} else {
-			savedProduct.push(addProduct);
+			savedProducts.push(addProduct);
 		}
-		if (res >= 0 && savedProduct[res].quantity + parseInt(quantity.value) > 100){
+		if (res >= 0 && savedProducts[res].quantity + parseInt(quantity.value) > 100){
 			return;
 		}
-		localStorage.setItem("cart", JSON.stringify(savedProduct));
+		localStorage.setItem("cart", JSON.stringify(savedProducts));
 	} else {
-		savedProduct = [];
-		savedProduct.push(addProduct);
-		localStorage.setItem("cart", JSON.stringify(savedProduct));
+		savedProducts = [];
+		savedProducts.push(addProduct);
+		localStorage.setItem("cart", JSON.stringify(savedProducts));
 	}
 
 });
