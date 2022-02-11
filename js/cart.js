@@ -42,9 +42,9 @@ for (let savedProduct of savedProducts) {
 			});
 			let deleteBtn = document.querySelector(".deleteItem");
 			deleteBtn.addEventListener("click", (e) => {
-        e.preventDefault();
+				e.preventDefault();
 				if (e) {
-          let productDisplay = document.querySelector(".cart__item");
+					let productDisplay = document.querySelector(".cart__item");
 					savedProducts.splice(savedProduct, 1);
 					productDisplay.remove();
 					return localStorage.setItem("cart", JSON.stringify(savedProducts));
