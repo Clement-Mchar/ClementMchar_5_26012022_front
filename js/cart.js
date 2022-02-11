@@ -1,8 +1,7 @@
-let productDisplay = document.querySelector("#cart__items");
+const productsDisplay = document.querySelector("#cart__items");
 let savedProducts = JSON.parse(localStorage.getItem("cart"));
 
 for (let savedProduct of savedProducts) {
-	console.log(savedProduct);
 	fetch("http://localhost:3000/api/products/" + savedProduct.id)
 		.then((product) => {
 			if (product.ok) {
@@ -11,7 +10,7 @@ for (let savedProduct of savedProducts) {
 			throw new error(product.statusText);
 		})
 		.then((product) => {
-			productDisplay.insertAdjacentHTML(
+			productsDisplay.insertAdjacentHTML(
 				"afterbegin",
 				`<article class="cart__item" data-id="${savedProduct.id}" data-color="${savedProduct.color}">
             <div class="cart__item__img">
@@ -35,6 +34,22 @@ for (let savedProduct of savedProducts) {
             </div>
           </article>`
 			);
+			document.querySelector("input").addEventListener("change", (e) => {
+				if (e) {
+					savedProduct.quantity = e.target.value;
+					return localStorage.setItem("cart", JSON.stringify(savedProducts));
+				}
+			});
+			let deleteBtn = document.querySelector(".deleteItem");
+			deleteBtn.addEventListener("click", (e) => {
+        e.preventDefault();
+				if (e) {
+          let productDisplay = document.querySelector(".cart__item");
+					savedProducts.splice(savedProduct, 1);
+					productDisplay.remove();
+					return localStorage.setItem("cart", JSON.stringify(savedProducts));
+				}
+			});
 		})
 		.catch((err) => {
 			console.error(err);
