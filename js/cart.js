@@ -3,27 +3,31 @@ let savedProducts = JSON.parse(localStorage.getItem("cart"));
 let articleToBeInserted = "";
 let input = document.querySelectorAll("input");
 const articles = document.querySelectorAll("article.cart__item");
-
-let total = 0;
+const reducer = (accumulator, currentValue) => accumulator + currentValue;
+let totalQty = [];
+let totalPrice = [];
 setup();
 async function setup() {
 	await fetchData();
 	productsDisplay.insertAdjacentHTML("afterbegin", articleToBeInserted);
-	articles.forEach((elem) => {
-		console.log(article);
-		const price = article.querySelector(
-			".cart__item__content__description>p:nth-of-type(2)"
-		);
-		const qty = article.querySelector(
-			".cart__item__content__settings__quantity>p:nth-of-type(1)"
-		);
-		const subTotal = price * qty;
-		total += subTotal;
-		console.log(subTotal);
-		document
-			.querySelector("#totalQuantity")
-			.insertAdjacentHTML("beforeend", `${totalQtySum}`);
-	});
+
+	for (let savedProduct of savedProducts) {
+		const qty = savedProduct.quantity;
+		const price = product.price;
+		const sumTotalPrice = price * qty;
+		totalPrice.push(sumTotalPrice)
+		totalQty.push(qty)
+	};
+
+	const totalPriceSum = totalPrice.reduce(reducer);
+	const totalQtySum = totalQty.reduce(reducer);
+	document
+		.querySelector("#totalPrice")
+		.insertAdjacentHTML("beforeend", `${totalPriceSum}`);
+
+	document
+		.querySelector("#totalQuantity")
+		.insertAdjacentHTML("beforeend", `${totalQtySum}`);
 
 	document.querySelectorAll("input").forEach((elem) => {
 		elem.addEventListener("change", (e) => {
@@ -40,6 +44,7 @@ async function setup() {
 			}
 		});
 	});
+
 
 	document.querySelectorAll(".deleteItem").forEach((elem) => {
 		elem.addEventListener("click", (e) => {
@@ -86,4 +91,5 @@ async function fetchData() {
               </div>
             </article>`;
 	}
+
 }
