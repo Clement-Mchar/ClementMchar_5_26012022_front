@@ -3,8 +3,7 @@ let savedProducts = JSON.parse(localStorage.getItem("cart"));
 let articleToBeInserted = "";
 let input = document.querySelectorAll("input");
 const articles = document.querySelectorAll("article.cart__item");
-let totalPrice = [];
-let totalQty = [];
+
 let total = 0;
 setup();
 async function setup() {
@@ -20,13 +19,11 @@ async function setup() {
 		);
 		const subTotal = price * qty;
 		total += subTotal;
-		const reducer = (accumulator, currentValue) => accumulator + currentValue;
-		const totalQtySum = totalQty.reduce(reducer);
+		console.log(subTotal);
 		document
 			.querySelector("#totalQuantity")
 			.insertAdjacentHTML("beforeend", `${totalQtySum}`);
 	});
-
 
 	document.querySelectorAll("input").forEach((elem) => {
 		elem.addEventListener("change", (e) => {
