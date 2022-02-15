@@ -2,8 +2,8 @@ const productsDisplay = document.querySelector("#cart__items");
 let savedProducts = JSON.parse(localStorage.getItem("cart"));
 let articleToBeInserted = "";
 let input = document.querySelectorAll("input");
-const articles = document.querySelectorAll("article.cart__item");
-const reducer = (accumulator, currentValue) => accumulator + currentValue;
+let articles = document.querySelectorAll("article.cart__item");
+
 let totalQty = [];
 let totalPrice = [];
 setup();
@@ -15,12 +15,13 @@ async function setup() {
 		const qty = savedProduct.quantity;
 		const price = product.price;
 		const sumTotalPrice = price * qty;
-		totalPrice.push(sumTotalPrice)
-		totalQty.push(qty)
-	};
-
+		totalPrice.push(sumTotalPrice);
+		totalQty.push(qty);
+	}
+	const reducer = (accumulator, currentValue) => accumulator + currentValue;
 	const totalPriceSum = totalPrice.reduce(reducer);
 	const totalQtySum = totalQty.reduce(reducer);
+
 	document
 		.querySelector("#totalPrice")
 		.insertAdjacentHTML("beforeend", `${totalPriceSum}`);
@@ -44,8 +45,6 @@ async function setup() {
 			}
 		});
 	});
-
-
 	document.querySelectorAll(".deleteItem").forEach((elem) => {
 		elem.addEventListener("click", (e) => {
 			e.preventDefault();
@@ -91,5 +90,68 @@ async function fetchData() {
               </div>
             </article>`;
 	}
-
 }
+
+const cartForm = document.querySelector("#order");
+cartForm.addEventListener("click", (e) => {
+	e.preventDefault();
+	const formArray = {
+		firstName: document.querySelector("#firstName").value,
+		lastName: document.querySelector("#lastName").value,
+		address: document.querySelector("#address").value,
+		city: document.querySelector("#city").value,
+		email: document.querySelector("#email").value,
+	};
+	const fnLnC = (value) => {
+		return /^[a-zA-Z]{2,30}$/.test(value);
+	};
+	const emailCheck = (value) => {
+		return /^([a-zA-Z0-9_\-\.]+)@([a-zA-Z0-9_\-\.]+)\.([a-zA-Z]{2,5})$/.test(
+			value
+		);
+	};
+	const addressCheck = (value) => {
+		return /^[a-zA-Z0-9]{3,50}$/.test(value);
+	};
+	function lettersOnlyFields() {
+		const firstNameCheck = formArray.firstName;
+		const lastNameCheck = formArray.lastName;
+		const cityCheck = formArray.city;
+		if (fnLnC(firstNameCheck) && fnLnC(lastNameCheck) && fnLnC(cityCheck)) {
+			return true;
+		} else {
+			alert("plus ou moins de lettres stp");
+			return false;
+		}
+	}
+	function emailField() {
+		const email = formArray.email;
+		if (emailCheck(email)) {
+			return true;
+		} else {
+			alert("écris une email valide stp");
+			return false;
+		}
+	}
+	function addressField() {
+		const address = formArray.address;
+		if (addressCheck(address)) {
+			return true;
+		} else {
+			alert("écrit une adresse valide stp");
+			return false;
+		}
+	}
+	if (lettersOnlyFields() && emailField() && addressField) {
+		localStorage.setItem("formArray", JSON.stringify(formArray));
+	} else {
+		alert("wesh");
+	}
+
+	const sendForm = {
+		savedProducts,
+		formArray,
+	};
+
+	console.log(sendForm);
+});
