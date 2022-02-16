@@ -4,44 +4,27 @@ let articleToBeInserted = "";
 let input = document.querySelectorAll("input");
 let articles = document.querySelectorAll("article.cart__item");
 
-let totalQty = [];
-let totalPrice = [];
 setup();
 async function setup() {
 	await fetchData();
 	productsDisplay.insertAdjacentHTML("afterbegin", articleToBeInserted);
-
-	for (let savedProduct of savedProducts) {
-		const qty = savedProduct.quantity;
-		const price = product.price;
-		const sumTotalPrice = price * qty;
-		totalPrice.push(sumTotalPrice);
-		totalQty.push(qty);
-	}
-	const reducer = (accumulator, currentValue) => accumulator + currentValue;
-	const totalPriceSum = totalPrice.reduce(reducer);
-	const totalQtySum = totalQty.reduce(reducer);
-
-	document
-		.querySelector("#totalPrice")
-		.insertAdjacentHTML("beforeend", `${totalPriceSum}`);
-
-	document
-		.querySelector("#totalQuantity")
-		.insertAdjacentHTML("beforeend", `${totalQtySum}`);
-
+	totalProducts();
 	document.querySelectorAll("input").forEach((elem) => {
 		elem.addEventListener("change", (e) => {
 			if (e.target.value) {
 				let articleFinded = e.target.closest("article");
-				const id = savedProducts.findIndex((savedProduct) => {
-					return (
-						savedProduct.id === articleFinded.getAttribute("data-id") &&
-						savedProduct.color === articleFinded.getAttribute("data-color")
-					);
-				});
-				savedProducts[id].quantity = parseInt(e.target.value);
-				return localStorage.setItem("cart", JSON.stringify(savedProducts));
+				if (articleFinded) {
+					const id = savedProducts.findIndex((savedProduct) => {
+						return (
+							savedProduct.id === articleFinded.getAttribute("data-id") &&
+							savedProduct.color === articleFinded.getAttribute("data-color")
+						);
+					});
+
+					savedProducts[id].quantity = parseInt(e.target.value);
+					totalProducts();
+					localStorage.setItem("cart", JSON.stringify(savedProducts));
+				}
 			}
 		});
 	});
@@ -49,15 +32,18 @@ async function setup() {
 		elem.addEventListener("click", (e) => {
 			e.preventDefault();
 			let articleFinded = e.target.closest("article");
-			const id = savedProducts.findIndex((savedProduct) => {
-				return (
-					savedProduct.id === articleFinded.getAttribute("data-id") &&
-					savedProduct.color === articleFinded.getAttribute("data-color")
-				);
-			});
+			{
+				const id = savedProducts.findIndex((savedProduct) => {
+					return (
+						savedProduct.id === articleFinded.getAttribute("data-id") &&
+						savedProduct.color === articleFinded.getAttribute("data-color")
+					);
+				});
+			}
 			savedProducts.splice(id, 1);
+			totalProducts();
 			articleFinded.remove();
-			return localStorage.setItem("cart", JSON.stringify(savedProducts));
+			localStorage.setItem("cart", JSON.stringify(savedProducts));
 		});
 	});
 }
@@ -92,31 +78,59 @@ async function fetchData() {
 	}
 }
 
+function totalProducts() {
+	let totalQty = [];
+	let totalPrice = [];
+
+	for (let savedProduct of savedProducts) {
+		const qty = savedProduct.quantity;
+		const price = product.price;
+		const sumTotalPrice = price * qty;
+		totalPrice.push(sumTotalPrice);
+		totalQty.push(qty);
+	}
+
+	const reducer = (accumulator, currentValue) => accumulator + currentValue;
+	const totalPriceSum = totalPrice.reduce(reducer);
+	const totalQtySum = totalQty.reduce(reducer);
+
+	document.querySelector("#totalPrice").textContent = totalPriceSum;
+
+	document.querySelector("#totalQuantity").textContent = totalQtySum;
+}
+
 const cartForm = document.querySelector("#order");
 cartForm.addEventListener("click", (e) => {
 	e.preventDefault();
-	const formArray = {
+	const contact = {
 		firstName: document.querySelector("#firstName").value,
 		lastName: document.querySelector("#lastName").value,
 		address: document.querySelector("#address").value,
 		city: document.querySelector("#city").value,
 		email: document.querySelector("#email").value,
 	};
-	const fnLnC = (value) => {
+
+	let products = [];
+	for (savedProduct of savedProducts) {
+		products.push(savedProduct.id);
+	}
+
+	function fnLnC(value) {
 		return /^[a-zA-Z]{2,30}$/.test(value);
-	};
-	const emailCheck = (value) => {
-		return /^([a-zA-Z0-9_\-\.]+)@([a-zA-Z0-9_\-\.]+)\.([a-zA-Z]{2,5})$/.test(
-			value
-		);
-	};
-	const addressCheck = (value) => {
+	}
+
+	function emailCheck(value) {
+		return /^([a-z0-9_\-\.]+)@([a-z0-9_\-\.]+)\.([a-zA-Z]{2,5})$/.test(value);
+	}
+
+	function addressCheck(value) {
 		return /^[a-zA-Z0-9]{3,50}$/.test(value);
-	};
+	}
+
 	function lettersOnlyFields() {
-		const firstNameCheck = formArray.firstName;
-		const lastNameCheck = formArray.lastName;
-		const cityCheck = formArray.city;
+		const firstNameCheck = contact.firstName;
+		const lastNameCheck = contact.lastName;
+		const cityCheck = contact.city;
 		if (fnLnC(firstNameCheck) && fnLnC(lastNameCheck) && fnLnC(cityCheck)) {
 			return true;
 		} else {
@@ -124,17 +138,19 @@ cartForm.addEventListener("click", (e) => {
 			return false;
 		}
 	}
+
 	function emailField() {
-		const email = formArray.email;
+		const email = contact.email;
 		if (emailCheck(email)) {
 			return true;
 		} else {
-			alert("écris une email valide stp");
+			alert("écris un email valide stp");
 			return false;
 		}
 	}
+
 	function addressField() {
-		const address = formArray.address;
+		const address = contact.address;
 		if (addressCheck(address)) {
 			return true;
 		} else {
@@ -142,16 +158,14 @@ cartForm.addEventListener("click", (e) => {
 			return false;
 		}
 	}
+	const order = {
+		products,
+		contact,
+	};
 	if (lettersOnlyFields() && emailField() && addressField) {
-		localStorage.setItem("formArray", JSON.stringify(formArray));
+		localStorage.setItem("order", JSON.stringify(order));
 	} else {
 		alert("wesh");
 	}
-
-	const sendForm = {
-		savedProducts,
-		formArray,
-	};
-
-	console.log(sendForm);
+	console.log(order)
 });
