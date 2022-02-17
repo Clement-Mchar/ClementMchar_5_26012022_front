@@ -134,7 +134,7 @@ cartForm.addEventListener("click", (e) => {
 		if (fnLnC(firstNameCheck) && fnLnC(lastNameCheck) && fnLnC(cityCheck)) {
 			return true;
 		} else {
-			alert("plus ou moins de lettres stp");
+			alert("Veuillez respecter la casse.");
 			return false;
 		}
 	}
@@ -144,7 +144,7 @@ cartForm.addEventListener("click", (e) => {
 		if (emailCheck(email)) {
 			return true;
 		} else {
-			alert("écris un email valide stp");
+			alert("veuillez entrer une adresse email valide.");
 			return false;
 		}
 	}
@@ -154,7 +154,7 @@ cartForm.addEventListener("click", (e) => {
 		if (addressCheck(address)) {
 			return true;
 		} else {
-			alert("écrit une adresse valide stp");
+			alert("Veuillez entrer une adresse valide.");
 			return false;
 		}
 	}
@@ -163,9 +163,23 @@ cartForm.addEventListener("click", (e) => {
 		contact,
 	};
 	if (lettersOnlyFields() && emailField() && addressField) {
-		localStorage.setItem("order", JSON.stringify(order));
+		fetch("http://localhost:3000/api/products/order", {
+			method: "POST",
+
+			body: JSON.stringify(order),
+
+			headers: {
+				"Content-type": "application/json; charset=UTF-8",
+			},
+		})
+			.then((response) => response.json())
+
+			.then(
+				(json) => window.location.href = `../html/confirmation.html?id=${json.orderId}`)
+			
 	} else {
-		alert("wesh");
+		alert(
+			"Oups ! Une erreur s'est glissée dans le formulaire. Merci de bien vérifier les données saisies."
+		);
 	}
-	console.log(order)
 });
