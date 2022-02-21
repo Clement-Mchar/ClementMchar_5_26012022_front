@@ -9,6 +9,8 @@ const select = document.querySelector("select");
 const cartBtn = document.getElementById("addToCart");
 const quantity = document.getElementById("quantity");
 
+//-------------- requète à l'Api pour récupérer les données d'un produit selon son id et les injecter dans sa page dédiée ------//
+
 fetch("http://localhost:3000/api/products/" + productId)
 	.then((product) => {
 		if (product.ok) {
@@ -16,6 +18,9 @@ fetch("http://localhost:3000/api/products/" + productId)
 		}
 		throw new error(product.statusText);
 	})
+
+	// ----------- on injecte les infos produits dans le HTML -----------//
+
 	.then((product) => {
 		article.insertAdjacentHTML(
 			"afterbegin",
@@ -42,9 +47,14 @@ fetch("http://localhost:3000/api/products/" + productId)
 			);
 		}
 	})
+
+	// ---------- on affiche l'erreur -----------//
+
 	.catch((err) => {
 		console.error(err);
 	});
+
+//---------- au click sur "ajouter au panier", on ajoute le produit/sa couleur/sa quantité au localStorage ------------//
 
 cartBtn.addEventListener("click", (submit) => {
 	if (
@@ -60,6 +70,8 @@ cartBtn.addEventListener("click", (submit) => {
 		color: select.value,
 	};
 
+	//------- on créé le panier dans le localStorage, s'il existe déjà on ajoute le produit et sa quantité -------//
+	
 	let savedProducts = JSON.parse(localStorage.getItem("cart"));
 	if (savedProducts) {
 		const res = savedProducts.findIndex((elem) => {

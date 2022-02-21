@@ -4,6 +4,8 @@ let articleToBeInserted = "";
 let input = document.querySelectorAll("input");
 let articles = document.querySelectorAll("article.cart__item");
 
+//--------- fonction async s'exécutant après la requète permettant de modifier la quantité/supprimer un produit du panier -----//
+
 setup();
 async function setup() {
 	await fetchData();
@@ -32,14 +34,12 @@ async function setup() {
 		elem.addEventListener("click", (e) => {
 			e.preventDefault();
 			let articleFinded = e.target.closest("article");
-			{
-				const id = savedProducts.findIndex((savedProduct) => {
-					return (
-						savedProduct.id === articleFinded.getAttribute("data-id") &&
-						savedProduct.color === articleFinded.getAttribute("data-color")
-					);
-				});
-			}
+			const id = savedProducts.findIndex((savedProduct) => {
+				return (
+					savedProduct.id === articleFinded.getAttribute("data-id") &&
+					savedProduct.color === articleFinded.getAttribute("data-color")
+				);
+			});
 			savedProducts.splice(id, 1);
 			totalProducts();
 			articleFinded.remove();
@@ -47,6 +47,8 @@ async function setup() {
 		});
 	});
 }
+
+//--------- boucle d'insertion du HTML en fonction du nombre de produits dans le panier ------------//
 
 async function fetchData() {
 	for (let savedProduct of savedProducts) {
@@ -77,7 +79,7 @@ async function fetchData() {
             </article>`;
 	}
 }
-
+//---------- fonction qui calcule le prix et la quantité totale des produits du panier -------//
 function totalProducts() {
 	let totalQty = [];
 	let totalPrice = [];
@@ -100,6 +102,9 @@ function totalProducts() {
 }
 
 const cartForm = document.querySelector("#order");
+
+//----------- évènement qui vérifie le correct remplissage du formulaire et redirige sur la page confirmation -------------//
+
 cartForm.addEventListener("click", (e) => {
 	e.preventDefault();
 	const contact = {
@@ -114,6 +119,7 @@ cartForm.addEventListener("click", (e) => {
 	for (savedProduct of savedProducts) {
 		products.push(savedProduct.id);
 	}
+	//---------- les regExp qui régissent les règles de remplissage du formulaire --------------//
 
 	function fnLnC(value) {
 		return /^[a-zA-Z]{2,30}$/.test(value);
@@ -162,6 +168,7 @@ cartForm.addEventListener("click", (e) => {
 		products,
 		contact,
 	};
+//---------- vérification et validation du formulaire ----------//
 	if (lettersOnlyFields() && emailField() && addressField) {
 		fetch("http://localhost:3000/api/products/order", {
 			method: "POST",
@@ -173,10 +180,13 @@ cartForm.addEventListener("click", (e) => {
 			},
 		})
 			.then((response) => response.json())
-
+//---------- redirection et suppression du panier ----------//
 			.then(
-				(json) => window.location.href = `../html/confirmation.html?id=${json.orderId}`)
-			
+				(json) =>
+					(window.location.href = `../html/confirmation.html?id=${json.orderId}`),
+				savedProducts.pop(),
+				localStorage.setItem("cart", JSON.stringify(savedProducts))
+			);
 	} else {
 		alert(
 			"Oups ! Une erreur s'est glissée dans le formulaire. Merci de bien vérifier les données saisies."

@@ -1,11 +1,16 @@
 const item = document.getElementById("items");
 
+//------- requète à l'api pour obtenir les infos produits et les injecter dynamiquement dans le HTML ------//
+
 fetch("http://localhost:3000/api/products")
 	.then((products) => {
 		if (products.ok) {
 			return products.json();
 		}
 		throw new error(products.statusText);
+
+		//-------------- on injecte les valeurs de chaque produit dans sa carte via le json ----------//
+
 	})
 	.then((products) => {
 		let card = "";
@@ -20,6 +25,9 @@ fetch("http://localhost:3000/api/products")
 		}
 		item.insertAdjacentHTML("afterbegin", card);
 	})
+
+	//------------------- on affiche l'erreur s'il y en a une ---------------------------//
+
 	.catch((err) => {
 		console.error(err);
 	});
