@@ -40,9 +40,14 @@ async function setup() {
 					savedProduct.color === articleFinded.getAttribute("data-color")
 				);
 			});
+			if (savedProducts > 0){
 			savedProducts.splice(id, 1);
 			totalProducts();
 			articleFinded.remove();
+		} else {
+			savedProducts.pop();
+			articleFinded.remove();
+		}
 			localStorage.setItem("cart", JSON.stringify(savedProducts));
 		});
 	});
@@ -79,7 +84,7 @@ async function fetchData() {
             </article>`;
 	}
 }
-//---------- fonction qui calcule le prix et la quantité totale des produits du panier -------//
+//---------- fonction qui calcule le prix et la quantité totale du panier  -------//
 function totalProducts() {
 	let totalQty = [];
 	let totalPrice = [];
