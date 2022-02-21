@@ -23,7 +23,12 @@ async function setup() {
 						);
 					});
 
-					savedProducts[id].quantity = parseInt(e.target.value);
+					if (id >= 0) {
+						savedProducts[id].quantity = parseInt(e.target.value);
+					}
+					if (id >= 0 && savedProducts[id].quantity > 100) {
+						return;
+					}
 					totalProducts();
 					localStorage.setItem("cart", JSON.stringify(savedProducts));
 				}
@@ -40,14 +45,14 @@ async function setup() {
 					savedProduct.color === articleFinded.getAttribute("data-color")
 				);
 			});
-			if (savedProducts > 0){
-			savedProducts.splice(id, 1);
-			totalProducts();
-			articleFinded.remove();
-		} else {
-			savedProducts.pop();
-			articleFinded.remove();
-		}
+			if (savedProducts > 0) {
+				savedProducts.splice(id, 1);
+				totalProducts();
+				articleFinded.remove();
+			} else {
+				savedProducts.pop();
+				articleFinded.remove();
+			}
 			localStorage.setItem("cart", JSON.stringify(savedProducts));
 		});
 	});
@@ -173,8 +178,8 @@ cartForm.addEventListener("click", (e) => {
 		products,
 		contact,
 	};
-//---------- vérification et validation du formulaire ----------//
-	if (lettersOnlyFields() && emailField() && addressField) {
+	//---------- vérification et validation du formulaire ----------//
+	if (lettersOnlyFields() && emailField() && addressField && savedProduct) {
 		fetch("http://localhost:3000/api/products/order", {
 			method: "POST",
 
@@ -185,7 +190,7 @@ cartForm.addEventListener("click", (e) => {
 			},
 		})
 			.then((response) => response.json())
-//---------- redirection et suppression du panier ----------//
+			//---------- redirection et suppression du panier ----------//
 			.then(
 				(json) =>
 					(window.location.href = `../html/confirmation.html?id=${json.orderId}`),
