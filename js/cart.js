@@ -199,7 +199,7 @@ cartForm.addEventListener("click", (e) => {
 			);
 	} else {
 		alert(
-			"Oups ! Une erreur s'est glissée dans le formulaire. Merci de bien vérifier les données saisies."
+			"Oups ! Une erreur a eu lieu lors de la commande. Merci de bien vérifier les données saisies."
 		);
 	}
 });
