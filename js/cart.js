@@ -26,7 +26,10 @@ async function setup() {
 					if (id >= 0) {
 						savedProducts[id].quantity = parseInt(e.target.value);
 					}
-					if (id >= 0 && savedProducts[id].quantity > 100) {
+					if (
+						(id >= 0 && savedProducts[id].quantity > 100) ||
+						savedProducts[id].quantity < 1
+					) {
 						return;
 					}
 					totalProducts();
@@ -47,12 +50,12 @@ async function setup() {
 			});
 			if (savedProducts > 0) {
 				savedProducts.splice(id, 1);
-				totalProducts();
 				articleFinded.remove();
 			} else {
 				savedProducts.pop();
 				articleFinded.remove();
 			}
+			totalProducts();
 			localStorage.setItem("cart", JSON.stringify(savedProducts));
 		});
 	});
@@ -103,8 +106,8 @@ function totalProducts() {
 	}
 
 	const reducer = (accumulator, currentValue) => accumulator + currentValue;
-	const totalPriceSum = totalPrice.reduce(reducer);
-	const totalQtySum = totalQty.reduce(reducer);
+	const totalPriceSum = totalPrice.reduce(reducer, 0);
+	const totalQtySum = totalQty.reduce(reducer, 0);
 
 	document.querySelector("#totalPrice").textContent = totalPriceSum;
 
