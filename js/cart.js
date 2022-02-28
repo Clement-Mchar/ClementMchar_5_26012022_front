@@ -28,7 +28,7 @@ async function setup() {
 					}
 					if (
 						(id >= 0 && savedProducts[id].quantity > 100) ||
-						savedProducts[id].quantity < 1
+						savedProducts[id].quantity <= 0
 					) {
 						return;
 					}
@@ -52,7 +52,7 @@ async function setup() {
 				savedProducts.splice(id, 1);
 				articleFinded.remove();
 			} else {
-				savedProducts.pop();
+				savedProducts.splice(id, 1);
 				articleFinded.remove();
 			}
 			totalProducts();
