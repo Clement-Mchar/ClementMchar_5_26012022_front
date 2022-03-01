@@ -66,7 +66,7 @@ async function setup() {
 async function fetchData() {
 	for (let savedProduct of savedProducts) {
 		productJson = await fetch(
-			"http://localhost:3000/api/products/" + savedProduct.id
+			"https://kanap-ecommerce.herokuapp.com/api/products/" + savedProduct.id
 		);
 		product = await productJson.json();
 		articleToBeInserted += `<article class="cart__item" data-id="${savedProduct.id}" data-color="${savedProduct.color}">
@@ -183,7 +183,7 @@ cartForm.addEventListener("click", (e) => {
 	};
 	//---------- vérification et validation du formulaire ----------//
 	if (lettersOnlyFields() && emailField() && addressField && savedProduct) {
-		fetch("http://localhost:3000/api/products/order", {
+		fetch("https://kanap-ecommerce.herokuapp.com/api/products/order", {
 			method: "POST",
 
 			body: JSON.stringify(order),

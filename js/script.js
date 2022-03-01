@@ -2,7 +2,7 @@ const item = document.getElementById("items");
 
 //------- requète à l'api pour obtenir les infos produits et les injecter dynamiquement dans le HTML ------//
 
-fetch("http://localhost:3000/api/products")
+fetch("https://kanap-ecommerce.herokuapp.com/api/products")
 	.then((products) => {
 		if (products.ok) {
 			return products.json();

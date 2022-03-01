@@ -11,7 +11,7 @@ const quantity = document.getElementById("quantity");
 
 //-------------- requète à l'Api pour récupérer les données d'un produit selon son id et les injecter dans sa page dédiée ------//
 
-fetch("http://localhost:3000/api/products/" + productId)
+fetch("https://kanap-ecommerce.herokuapp.com/api/products/" + productId)
 	.then((product) => {
 		if (product.ok) {
 			return product.json();
